@@ -1,0 +1,120 @@
+\documentclass[a4paper, 10pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[portuges]{babel}
+\usepackage{a4wide}
+
+\title{Projeto de Laboratórios de Informática 3\\Grupo 4}
+\author{Daniel Costa (A81302) \and Carlos Castro (A81946) \and Luís Macedo (A80494)}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introdução}
+\label{sec:intro}
+
+\paragraph{ }
+No sentido de analisar o funcionamento do site mais procurado pelos
+estudantes Engenharia Informática, \emph{Stackoverflow}, a equipa docente
+requesitou aos alunos de LI3 que criassem um programa que respondesse
+a 11 querys, sobre a atividade do site.
+
+O próprio centra-se nas perguntas e respostas da comunidade sobre qualquer problema na área da Informática, ou seja, após a criação de uma pergunta, qualquer utilizador que veja essa pergunta pode responder e receber upvotes, se a resposta ajudar na resolução do problema, ou downvotes, caso aconteça o contrário.
+
+Para tal, são nos fornecido ficheiros xml com toda a informação dos usuários, perguntas/respostas, tags, etc.
+
+\section{Tipo Concreto de Dados}
+\label{sec:TCD}
+
+\paragraph{ }
+
+A fim de guardar a diferente informação obtida pela análise dos ficheiros fornecidos, foi necessário fazer um estrutura de dados.
+
+Essa estrutura está guarda na classe dumpOS que é constituida por:
+\begin{itemize}
+    \item \emph{HashMap} cuja chave é o id do \emph{Post} e o seu valor é um \emph{Post};
+    \item \emph{HashMap} cuja chave é o id do \emph{User} e o seu valor é um \emph{User};
+    \item \emph{TreeSet} cuja chave é a data da criação da \emph{Question} e o seu valor é um \emph{Question};
+    \item \emph{TreeSet} cuja chave é a data da criação da \emph{Answer} e o seu valor é um \emph{Answer};
+    \item \emph{ArrayList} de \emph{User} ordenado pelo número de \emph{Posts} publicado pelo utilizador;
+    \item \emph{HashMap} cuja chave é a \emph{Tag} e o seu valor é um \emph{Id};
+\end{itemize}
+
+\section{Estruturas de Dados}
+\label{sec:ED}
+
+\paragraph{ }
+
+As estruturas de dados estão implementadas nas classes \emph{dumpOS}, \emph{Users}, \emph{Questions}, \emph{Answers}.
+
+\subsection{dumpOS}
+\label{sssec:dumpOS}
+
+\paragraph{ }
+
+Esta estrutura armazena as classes \emph{Users}, \emph{Questions}, \emph{Answers} e é organizada do seguinte modo:
+\begin{itemize}
+    \item postsById, \emph{HashMap} cuja chave é o id do \emph{Post} e o seu valor é um \emph{Post};
+    \item questionsByDate, \emph{HashMap} cuja chave é o id do \emph{User} e o seu valor é um \emph{User};
+    \item answersByDate, \emph{TreeSet} cuja chave é a data da criação da \emph{Question} e o seu valor é um \emph{Question};
+    \item usersById, \emph{TreeSet} cuja chave é a data da criação da \emph{Answer} e o seu valor é um \emph{Answer};
+    \item usersByPosts, \emph{ArrayList} de \emph{User} ordenado pelo número de \emph{Posts} publicado pelo utilizador;
+    \item mapTags \emph{HashMap} cuja chave é a \emph{Tag} e o seu valor é um \emph{Id};
+\end{itemize}
+
+O \emph{dumpOS} tem métodos associados tais como:
+\begin{itemize}
+	\item \emph{getUser}, retorna o \emph{User} dado o seu id;
+	\item \emph{getPost}, retorna o \emph{Post} dado o seu id;
+	\item \emph{getTopUsersByPosts}, retorna os N \emph{Users} com mais \emph{Posts};
+	\item \emph{getQuestionsByDate}, retorna as \emph{Questions} num intervalo de tempo ordenadas pela data;
+	\item \emph{getAnswersByDate}, retorna as \emph{Answers} num intervalo de tempo ordenadas pela data;
+	\item \emph{getPostsByDate}, retorna os \emph{Posts} num intervalo de tempo ordenadas pela data;
+	\item \emph{getQuestionsWithWord}, retorna todas as \emph{Questions} que contém a palavra;
+\end{itemize}
+
+%Continuar
+
+\section{Melhoramento de Performance}
+\label{sec:MP}
+\paragraph{ }
+
+%De forma a melhorar o desempenho do programa, foi preciso estruturar certas estrategias para que ao fazer parse dos ficheiro xml, o tempo que este demora seja o mais pequeno possivel. Para tal, optou-se usar uma AVL, com apontador para o pai, de modo a ser possivel inserir, pesquisar e iterar rapidamente. Esta AVL tem de ser balanceada, pois melhora o pior caso em relação às árvores binárias de procura e tem uma complexidade de O(log n), em vez de O(n).
+%\paragraph{ }
+%Para além das AVL, também usamos Hash Tables. Estas são eficientes para inserção, retirada e busca, com custo de pesquisa de O(1) para o caso médio. Estas são especialmente usadas para as querys que não necessitam de iterar.
+
+\section{Estratégias das Interrogações}
+\label{sec:EI}
+% Mudar os nomes
+\begin{enumerate}
+    \item ...
+	%\item Procura a \emph{Row} do post pelo id no \emph{TRowMap} de posts. Vai à \emph{Row} buscar os dados pedidos e guarda num \emph{STR\_pair}.
+
+	%\item Percorre a coluna ordenada por reputação na \emph{TTable} de users e guarda o id dos top N.
+
+	%\item Percorre as colunas ordenadas por tempo nas \emph{TTable} de perguntas e respostas, no intervalo dado, e conta o número de \emph{Rows}.
+
+	%\item Percorre a coluna ordenada por tempo na \emph{TTable} de perguntas, no intervalo dado, e verifica em cada \emph{Row} se a hash table de tags contém a tag indicada.
+	%Se a tag corresponder à \emph{Row} é guardada num array dinâmico que depois é convertido para \emph{LONG\_list}.
+
+	%\item Procura a \emph{Row} do user pelo id no \emph{TRowMap} de Users, onde vai buscar os dados pedidos. O array de posts é ordenado por data e depois convertido para \emph{LONG\_list}.
+
+	%\item Percorre a coluna ordenada por tempo na \emph{TTable} de respostas, no intervalo dado, e guarda as \emph{Rows} num array que é ordenado pelo número de votos.
+	%Este array é depois copiado para uma \emph{LONG\_list} de tamanho máximo N.
+
+	%\item Percorre a coluna, ordenada por tempo, na \emph{TTable} de perguntas, no intervalo dado, e guarda as \emph{Rows} num array que é ordenado pelo número de respostas dentro do intervalo. Este array é depois copiado para uma \emph{LONG\_list} de tamanho máximo N.
+
+	%\item Procura a \emph{TRowList} de perguntas, pela palavra dada, num \emph{TRowMap}. Ordena a lista por data e copia-a para uma \emph{LONG\_list} de tamanho máximo N.
+
+	%\item Procura as \emph{Rows} dos users pelo id no \emph{TRowMap} de users e vai buscar as suas listas de posts. Percorre as listas convertendo as respostas nas suas perguntas correspondentes e depois ordena-as por data. Percorre as listas ordenadamente avançando a \emph{Row} da lista com data maior até encontrar uma data em comum nas duas. Se encontrada uma data em comum faz uma busca linear de ids iguais em todas as \emph{Rows} com essa data. Se encontrar, adiciona o id a um array dinâmico. Este array é depois conpiado para uma \emph{LONG\_list} de tamanho máximo N, filtrando elementos repetidos no processo.
+
+	%\item Procura a \emph{Row} de um post (que neste caso é uma pergunta) pelo id no \emph{TRowMap} de posts onde vai buscar a lista de respostas. Percorre a lista de respostas e guarda a que tiver melhor pontuação com os critérios pedidos.
+
+	%\item Procura as \emph{Rows} das perguntas dentro de um intervalo de tempo. Percorre a coluna ordenada de reputação pelos N utilizadores com mais reputação e adiciona o seu Id a uma tabela de hash. Depois, percorre as perguntas encontradas e verifica se o seu \emph{ownerId} está na tabela de hash com os top N utilizadores, se assim for, procura a tag numa tabela de hash e incrementa o seu valor. Posteriormente, a hash table com o número de utilização da tag é convertido para um array dinâmico e ordenado pelo número de utilização. Por fim, procura-se o id de cada uma das tags na tabela de hash \emph{tags} e adiciona-se numa \emph{LONG\_list}.
+
+\end{enumerate}
+
+\end{document}\grid
+\grid

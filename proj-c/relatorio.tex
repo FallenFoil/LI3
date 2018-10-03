@@ -1,0 +1,237 @@
+\documentclass[a4paper, 10pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[portuges]{babel}
+\usepackage{a4wide}
+
+\title{Projeto de Laboratórios de Informática 3\\Grupo 4}
+\author{Daniel Costa (A81302) \and Carlos Castro (A81946) \and Luís Macedo (A80494)}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introdução}
+\label{sec:intro}
+
+\paragraph{ }
+No sentido de analisar o funcionamento do site mais procurado pelos
+estudantes Engenharia Informática, \emph{Stackoverflow}, a equipa docente
+requesitou aos alunos de LI3 que criassem um programa que respondesse
+a 11 querys, sobre a atividade do site.
+
+O próprio centra-se nas perguntas e respostas da comunidade sobre qualquer problema na área da Informática, ou seja, após a criação de uma pergunta, qualquer utilizador que veja essa pergunta pode responder e receber upvotes, se a resposta ajudar na resolução do problema, ou downvotes, caso aconteça o contrário.
+
+Para tal, são nos fornecido ficheiros xml com toda a informação dos usuários, perguntas/respostas, tags, etc.
+
+\section{Tipo Concreto de Dados}
+\label{sec:TCD}
+
+\paragraph{ }
+
+A fim de guardar a diferente informação obtida pela análise dos ficheiros fornecidos, foi necessário fazer um estrutura de dados.
+
+Essa estrutura é constituida por:
+\begin{itemize}
+	\item \emph{tables}, um \emph{array} de \emph{TTable}, com 3 elementos, que guarda a informação sobre os Utilizadores, as Perguntas e as Respostas;
+	\item \emph{maps}, um \emph{array} de \emph{TRowMap}, com 2 elementos, que guarda pares chave-valor do tipo id-\emph{TRow} dos Utilizadores/Posts;
+	\item \emph{mapWords}, um \emph{TRowMapList} que guarda pares palavra-\emph{TRow's} das Perguntas que têm a palavra no título;
+	\item \emph{tags}, uma \emph{GHashTable*}, a implementação do glib de \emph{hash table}, que guarda pares tag-id;
+\end{itemize}
+
+\section{Estruturas de Dados}
+\label{sec:ED}
+
+\paragraph{ }
+
+As estruturas de dados está implementada no módulo \emph{database}.
+
+\subsection{TTable}
+\label{sssec:Table}
+
+\paragraph{ }
+
+Esta estrutura armazena de forma organizada as \emph{TRow's} e é organizada do seguinte modo:
+\begin{itemize}
+	\item \emph{columns}, um \emph{array} de \emph{TColumn};
+	\item \emph{numCol}, um \emph{int} que guarda o número de colunas que existe na tabela;
+\end{itemize}
+O \emph{array columns} contem todas as \emph{TRow's} inseridas na tabela. Cada posição do \emph{array columns} tem uma \emph{TColumn} que tem as \emph{TRow}'s ordenadas pela respetiva coluna.
+
+A \emph{TTable} tem funções associados tais como:
+\begin{itemize}
+	\item \emph{tNew}, cria uma nova tabela;
+	\item \emph{tDelete}, apaga uma tabela já criada;
+	\item \emph{tSort}, ordena todas colunas;
+\end{itemize}
+
+\subsection{TColumn}
+\label{sssec:Column}
+
+\paragraph{ }
+
+Esta estrutura armazena o tipo dos dados, ordena as \emph{TRow's} e é organizada do seguinte modo:
+\begin{itemize}
+	\item \emph{índices}, um \emph{GSequence*} de \emph{TRow's};
+	\item \emph{type}, um \emph{Type} que guarda o tipo dos dados dessa coluna;
+\end{itemize}
+O \emph{GSequence* índices} é uma árvore AVL de \emph{TRow's} com apontador para o pai. A árvore é ordenada pelos valores dessa coluna na \emph{TRow}.
+
+A \emph{TRow} tem função associada:
+\begin{itemize}
+	\item \emph{tColumnSort}, ordena uma coluna;
+\end{itemize}
+
+\subsection{TRow}
+\label{sssec:Row}
+
+\paragraph{ }
+
+Esta estrutura armazena o tipo os dados e é organizada do seguinte modo:
+\begin{itemize}
+	\item \emph{iters}, um \emph{array} de \emph{GSequenceIter*};
+	\item \emph{data}, um \emph{array} de \emph{void*} que guarda apontadores para a informação a ser guardada;
+\end{itemize}
+O \emph{array GSequenceIter* índices} permite encontrar a \emph{TRow} anterior ou a próxima de uma determinada coluna.
+O \emph{array data} tem em cada elemeto um apontador para a informação a ser guardada. O índice do \emph{array} é o id da coluna.
+
+A \emph{TColumn} tem as seguinte funções associadas:
+\begin{itemize}
+	\item \emph{tGetRow}, retorna uma \emph{TRow} que cumpre todas as condições;
+	\item \emph{tGetRowEquals}, retorna uma row que valor igual ao parametro passado;
+	\item \emph{tGetRows}, retorna as \emph{TRow's} que cumprem todas as condições;
+	\item \emph{tCounTRows}, conta o número de \emph{TRow} que cumprem todas as condições;
+	\item \emph{tApplyRows}, aplica uma função a todas as \emph{TRow} que cumprem todas as condições;
+	\item \emph{tFirstRow}, retorna a \emph{TRow} com o menor valor;
+	\item \emph{tLastRow}, retorna a \emph{TRow} com o maior valor;
+	\item \emph{tNextRow}, retorna a \emph{TRow} imediatamente maior;
+	\item \emph{tPrevRow}, retorna a \emph{TRow} imediatamente menor;
+	\item \emph{tGetData}, retorna o apontador da coluna da \emph{TRow};
+	\item \emph{tGetDataEquals}, retorna o apontador da coluna da \emph{TRow};
+\end{itemize}
+
+\subsection{TQuery}
+\label{sssec:Query}
+
+\paragraph{ }
+
+Esta estrutura armazena uma condição e é organizada do seguinte modo:
+\begin{itemize}
+	\item \emph{colId}, um \emph{unsigned int} que indica a coluna a que se aplica a condição;
+	\item \emph{opr}, um \emph{Operator} que indica a operação da condição;
+	\item \emph{value}, um \emph{void*} que aponta para o valor a ser comparado;
+\end{itemize}
+
+A \emph{TQuery} tem funções associados tais como:
+\begin{itemize}
+	\item \emph{tNewQuery}, cria uma nova \emph{TQuery};
+	\item \emph{tDeleteQuery}, apaga uma \emph{TQuery};
+\end{itemize}
+
+\subsection{TRowList}
+\label{sssec:List}
+
+\paragraph{ }
+
+Esta estrutura armazena uma lista de \emph{TRow} e é organizada do seguinte modo:
+\begin{itemize}
+	\item \emph{array}, um \emph{GPtrArray*}, a implementação de um \emph{array} dinámico do glib, que guarda uma lista de \emph{TRow's};
+\end{itemize}
+
+A emph{TRowList} tem funções associados tais como:
+\begin{itemize}
+	\item \emph{tListNew}, cria uma nova \emph{TRowList};
+	\item \emph{tListPosition}, retorna a \emph{TRow} numa determinada posição;
+	\item \emph{tListAdd}, adiciona uma \emph{TRow} ao final da lista;
+	\item \emph{tListLength}, retorna o tamanho da lista;
+	\item \emph{tListSort}, ordena a lista;
+	\item \emph{tListSortWithData}, ordena a lista;
+	\item \emph{tListForEach}, aplica uma função a cada elemento da lista;
+	\item \emph{tListDelete}, apaga uma \emph{TRowList};
+\end{itemize}
+
+\subsection{TRowMap}
+\label{sssec:Map}
+
+\paragraph{ }
+
+Esta estrutura armazena um par chave-\emph{TRow} e é organizada do seguinte modo:
+\begin{itemize}
+	\item \emph{map}, uma \emph{GHashTable*}, a implementação de uma \emph{hash table} do glib, que guarda uma \emph{Row};
+	\item \emph{type}, tipo das chaves;
+\end{itemize}
+
+A \emph{TRowList} tem funções associados tais como:
+\begin{itemize}
+	\item \emph{tNewMap}, cria uma nova \emph{TRowMap};
+	\item \emph{tMapSetRowByKey}, insere uma \emph{TRow};
+	\item \emph{tMapSetRowByCol}, insere uma \emph{TRow};
+	\item \emph{tMapGetRow}, retorna uma \emph{TRow} dado a chave;
+	\item \emph{tMapDelete}, apaga uma \emph{TRowMap};
+\end{itemize}
+
+\subsection{TRowMapList}
+\label{sssec:MapList}
+
+\paragraph{ }
+
+Esta estrutura armazena um par chave-\emph{TListRow} e é organizada do seguinte modo:
+\begin{itemize}
+	\item \emph{map}, uma \emph{GHashTable*}, a implementação de uma \emph{hash table} do glib, que guarda uma \emph{TRowList};
+	\item \emph{type}, tipo das chaves;
+\end{itemize}
+
+A \emph{TRowList} tem funções associados tais como:
+\begin{itemize}
+	\item \emph{tNewMapList}, cria uma nova \emph{TRowMapList};
+	\item \emph{tMapListSetRowByKey}, insere uma \emph{TRow};
+	\item \emph{tMapListSetRowByCol}, insere uma \emph{TRow};
+	\item \emph{tMapListGetRows}, retorna uma \emph{TRowList} dado a chave;
+	\item \emph{tMapListDelete}, apaga uma \emph{TRowMapList};
+\end{itemize}
+
+\section{Melhoramento de Performance}
+\label{sec:MP}
+\paragraph{ }
+
+De forma a melhorar o desempenho do programa, foi preciso estruturar certas estrategias para que ao fazer parse dos ficheiro xml, o tempo que este demora seja o mais pequeno possivel. Para tal, optou-se usar uma AVL, com apontador para o pai, de modo a ser possivel inserir, pesquisar e iterar rapidamente. Esta AVL tem de ser balanceada, pois melhora o pior caso em relação às árvores binárias de procura e tem uma complexidade de O(log n), em vez de O(n).
+\paragraph{ }
+Para além das AVL, também usamos Hash Tables. Estas são eficientes para inserção, retirada e busca, com custo de pesquisa de O(1) para o caso médio. Estas são especialmente usadas para as querys que não necessitam de iterar.
+
+\section{Estratégias das Interrogações}
+\label{sec:EI}
+\begin{enumerate}
+	\item Procura a \emph{Row} do post pelo id no \emph{TRowMap} de posts. Vai à \emph{Row} buscar os dados pedidos e guarda num \emph{STR\_pair}.
+
+	\item Percorre a coluna ordenada por reputação na \emph{TTable} de users e guarda o id dos top N.
+
+	\item Percorre as colunas ordenadas por tempo nas \emph{TTable} de perguntas e respostas, no intervalo dado, e conta o número de \emph{Rows}.
+
+	\item Percorre a coluna ordenada por tempo na \emph{TTable} de perguntas, no intervalo dado, e verifica em cada \emph{Row} se a hash table de tags contém a tag indicada.
+	Se a tag corresponder à \emph{Row} é guardada num array dinâmico que depois é convertido para \emph{LONG\_list}.
+
+	\item Procura a \emph{Row} do user pelo id no \emph{TRowMap} de Users, onde vai buscar os dados pedidos. O array de posts é ordenado por data e depois convertido para \emph{LONG\_list}.
+
+	\item Percorre a coluna ordenada por tempo na \emph{TTable} de respostas, no intervalo dado, e guarda as \emph{Rows} num array que é ordenado pelo número de votos.
+	Este array é depois copiado para uma \emph{LONG\_list} de tamanho máximo N.
+
+	\item Percorre a coluna, ordenada por tempo, na \emph{TTable} de perguntas, no intervalo dado, e guarda as \emph{Rows} num array que é ordenado pelo número de respostas dentro do intervalo. Este array é depois copiado para uma \emph{LONG\_list} de tamanho máximo N.
+
+	\item Procura a \emph{TRowList} de perguntas, pela palavra dada, num \emph{TRowMap}. Ordena a lista por data e copia-a para uma \emph{LONG\_list} de tamanho máximo N.
+
+	\item Procura as \emph{Rows} dos users pelo id no \emph{TRowMap} de users e vai buscar as suas listas de posts. Percorre as listas convertendo as respostas nas suas perguntas correspondentes e depois ordena-as por data. Percorre as listas ordenadamente avançando a \emph{Row} da lista com data maior até encontrar uma data em comum nas duas. Se encontrada uma data em comum faz uma busca linear de ids iguais em todas as \emph{Rows} com essa data. Se encontrar, adiciona o id a um array dinâmico. Este array é depois conpiado para uma \emph{LONG\_list} de tamanho máximo N, filtrando elementos repetidos no processo.
+
+	\item Procura a \emph{Row} de um post (que neste caso é uma pergunta) pelo id no \emph{TRowMap} de posts onde vai buscar a lista de respostas. Percorre a lista de respostas e guarda a que tiver melhor pontuação com os critérios pedidos.
+
+	\item Procura as \emph{Rows} das perguntas dentro de um intervalo de tempo. Percorre a coluna ordenada de reputação pelos N utilizadores com mais reputação e adiciona o seu Id a uma tabela de hash. Depois, percorre as perguntas encontradas e verifica se o seu \emph{ownerId} está na tabela de hash com os top N utilizadores, se assim for, procura a tag numa tabela de hash e incrementa o seu valor. Posteriormente, a hash table com o número de utilização da tag é convertido para um array dinâmico e ordenado pelo número de utilização. Por fim, procura-se o id de cada uma das tags na tabela de hash \emph{tags} e adiciona-se numa \emph{LONG\_list}.
+
+\end{enumerate}
+
+\section{Notas}
+\label{sec:notas}
+
+Devido a um lapso do membro Daniel Costa, o qual enganou-se ao configurar o email no git do terminal, exitem varios commits no repositorio de um user diferente, portanto vimos informar que tais commits pertençem ao Daniel.
+
+\end{document}\grid
+\grid
