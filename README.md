@@ -5,6 +5,6 @@ This project was made for a computer discipline in University of Minho.
 
 ## Developers
 
-(Luis Macedo)[https://github.com/FallenFoil];
-(Carlos Castro)[https://github.com/carlosc20];
-(Daniel Costa)[https://github.com/Dans24];
+[Luis Macedo)](https://github.com/FallenFoil);
+[Carlos Castro](https://github.com/carlosc20);
+[Daniel Costa](https://github.com/Dans24);
